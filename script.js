@@ -141,8 +141,6 @@
 
   function clearFilter() { state.filter = null; applyFilter(); }
 
-  function printResume() { state.filter = null; applyFilter(); window.print(); }
-
   function init() {
     root = document.getElementById('resume-root');
     if (!root) return;
@@ -155,8 +153,6 @@
 
     var themeBtn = document.getElementById('theme-toggle');
     if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
-    var printBtn = document.getElementById('print-btn');
-    if (printBtn) printBtn.addEventListener('click', printResume);
     var clearBtn = document.getElementById('clear-filter');
     if (clearBtn) clearBtn.addEventListener('click', clearFilter);
 
