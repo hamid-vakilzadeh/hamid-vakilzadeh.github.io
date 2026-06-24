@@ -9,7 +9,7 @@ no dependencies. Hosted on GitHub Pages at **[vakilzadeh.com](https://vakilzadeh
 | --- | --- |
 | `index.html` | Content & structure |
 | `styles.css` | Design system — theme variables, light/dark, tag styles, print rules |
-| `script.js` | Behavior — theme toggle, print/PDF, focus-area filters |
+| `script.js` | Behavior — theme toggle, focus-area filters |
 | `CNAME` | Custom domain for GitHub Pages |
 
 The page was originally authored in a design canvas; it has been ported to a
@@ -27,6 +27,7 @@ python3 -m http.server 8000   # then visit http://localhost:8000
 ## Features
 
 - **Light / dark theme** — toggled in the header, persisted in `localStorage`.
-- **Print / PDF** — print-optimized stylesheet (`@media print`), letter size.
+- **Print-friendly** — a print stylesheet (`@media print`, letter size) keeps
+  browser print / save-as-PDF clean.
 - **Focus filters** — click a focus area or a skill tag to show only the
   matching work, with animated show/hide and sidebar highlighting.

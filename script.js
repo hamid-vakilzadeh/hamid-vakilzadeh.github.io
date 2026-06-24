@@ -3,7 +3,6 @@
  * DCLogic component. No framework, no build step.
  *
  *   - Light / dark theme toggle (persisted in localStorage)
- *   - Print / PDF (clears any active filter first)
  *   - Focus-area filters: click a focus button or a sidebar tag to show only
  *     the work that matches, with slide animations and sidebar highlighting.
  */
