@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
+  :root {
+    --bg: oklch(98.2% 0.002 250);
+    --bg-elev: oklch(100% 0 0);
+    --surface: oklch(96% 0.003 250);
+    --ink: oklch(22% 0.006 260);
+    --ink-soft: oklch(38% 0.006 260);
+    --muted: oklch(52% 0.006 260);
+    --border: oklch(90% 0.004 255);
+    --border-strong: oklch(82% 0.005 255);
+    --accent: oklch(77% 0.165 76);
+    --accent-soft: oklch(93% 0.06 82);
+    --accent-ink: oklch(24% 0.04 75);
+    --skill-soft: oklch(95% 0.05 85); --skill-bd: oklch(84% 0.1 82); --skill-tx: oklch(46% 0.09 65);
+    --skill-hi-bg: var(--accent); --skill-hi-bd: oklch(68% 0.16 78); --skill-hi-tx: var(--accent-ink);
+    --lang-soft: var(--surface); --lang-bd: var(--border-strong); --lang-tx: var(--ink-soft);
+    --lang-hi-bg: var(--ink); --lang-hi-bd: var(--ink); --lang-hi-tx: var(--bg);
+    --tool-soft: transparent; --tool-bd: var(--border-strong); --tool-tx: var(--muted);
+    --tool-hi-bg: var(--ink-soft); --tool-hi-bd: var(--ink-soft); --tool-hi-tx: var(--bg);
+    --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+  [data-theme="dark"] {
+    --bg: oklch(15% 0 0);
+    --bg-elev: oklch(18.5% 0 0);
+    --surface: oklch(22% 0 0);
+    --ink: oklch(94% 0.003 260);
+    --ink-soft: oklch(80% 0.004 260);
+    --muted: oklch(64% 0.006 260);
+    --border: oklch(29% 0 0);
+    --border-strong: oklch(38% 0 0);
+    --accent: oklch(82% 0.16 80);
+    --accent-soft: oklch(34% 0.07 70);
+    --accent-ink: oklch(15% 0 0);
+    --skill-soft: oklch(33% 0.06 75); --skill-bd: oklch(52% 0.1 78); --skill-tx: oklch(86% 0.1 82);
+    --skill-hi-bg: var(--accent); --skill-hi-bd: var(--accent); --skill-hi-tx: var(--accent-ink);
+  }
+  ::selection { background: var(--accent-soft); }
+  a { color: inherit; text-decoration: none; }
+  [data-item].sc-hide { display: none !important; }
+  section.sc-hide { display: none !important; }
+  [data-filter].sc-active { border-color: var(--accent) !important; box-shadow: 0 0 0 1px var(--accent) !important; }
+  .sc-tag { font-family: var(--font-mono); font-size: 11px; line-height: 1.4; border-radius: 4px; padding: 4px 9px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-soft); display: inline-block; }
+  aside .sc-tag { transition: background .22s ease, border-color .22s ease, color .22s ease; }
+  .sc-tag[data-filter]:not(.sc-unattached) { cursor: pointer; }
+  .sc-tag.sc-unattached { cursor: default; }
+  .sc-tag.tag-skill { background: var(--skill-soft); border-color: var(--skill-bd); color: var(--skill-tx); }
+  .sc-tag.tag-lang { background: var(--lang-soft); border-color: var(--lang-bd); color: var(--lang-tx); }
+  .sc-tag.tag-tool { background: var(--tool-soft); border-color: var(--tool-bd); color: var(--tool-tx); border-style: dashed; }
+  .sc-tag.tag-skill.sc-hi { background: var(--skill-hi-bg) !important; border-color: var(--skill-hi-bd) !important; color: var(--skill-hi-tx) !important; font-weight: 600; }
+  .sc-tag.tag-lang.sc-hi { background: var(--lang-hi-bg) !important; border-color: var(--lang-hi-bd) !important; color: var(--lang-hi-tx) !important; font-weight: 600; }
+  .sc-tag.tag-tool.sc-hi { background: var(--tool-hi-bg) !important; border-color: var(--tool-hi-bd) !important; color: var(--tool-hi-tx) !important; border-style: solid !important; font-weight: 600; }
+  .sc-tag.sc-unattached { background: var(--surface) !important; border-color: var(--border) !important; color: var(--muted) !important; opacity: .6; }
+  @media print {
+    html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .no-print { display: none !important; }
+    [data-theme] { --bg: #fff; --bg-elev: #fff; --surface: #f5f5f4; --ink: #1a1a1a; --ink-soft: #3a3a3a; --muted: #6a6a6a; --border: #e2e2e0; --border-strong: #cacac8; }
+    @page { size: letter; margin: 0.5in; }
+  }
+</style>
+</helmet>
+
+<div ref="{{ rootRef }}" data-theme="{{ theme }}" style="min-height:100vh; background:var(--bg); color:var(--ink); transition:background .3s ease, color .3s ease;">
+<div style="max-width:1100px; margin:0 auto; padding:52px 40px 72px;">
+
+  <!-- ===== HEADER ===== -->
+  <header style="display:flex; align-items:flex-start; justify-content:space-between; gap:32px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:280px;">
+      <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;">
+        <h1 style="font-family:var(--font-body); font-weight:800; font-size:clamp(38px,5.2vw,58px); line-height:0.98; letter-spacing:-0.025em; margin:0;">Hamid Vakilzadeh</h1>
+        <span style="font-family:var(--font-mono); font-size:13px; color:var(--accent-ink); background:var(--accent); padding:4px 10px; border-radius:5px; font-weight:500;">Ph.D · CFE</span>
+      </div>
+      <p style="font-size:19px; line-height:1.45; color:var(--ink-soft); margin:16px 0 0; max-width:58ch;">Applied AI/ML builder — <strong style="color:var(--ink); font-weight:600;">LLM evaluation, observability &amp; agentic systems</strong>. I ship production AI, eval frameworks, and open-source infrastructure for high-stakes financial workflows.</p>
+    </div>
+    <div class="no-print" style="display:flex; gap:10px; flex:none;">
+      <button onClick="{{ toggleTheme }}" style="font-family:var(--font-mono); font-size:12px; cursor:pointer; background:var(--surface); color:var(--ink); border:1px solid var(--border); border-radius:999px; padding:8px 15px; display:flex; align-items:center; gap:7px;"><span style="width:9px; height:9px; border-radius:50%; background:var(--accent); display:inline-block;"></span>{{ themeLabel }}</button>
+      <button onClick="{{ printResume }}" style="font-family:var(--font-mono); font-size:12px; cursor:pointer; background:var(--ink); color:var(--bg); border:1px solid var(--ink); border-radius:999px; padding:8px 16px;">Print / PDF</button>
+    </div>
+  </header>
+
+  <!-- contact row -->
+  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px; margin-top:24px; font-family:var(--font-mono); font-size:13px; color:var(--ink-soft);">
+    <a href="https://github.com/hamid-vakilzadeh" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub" style="display:flex; align-items:center; color:var(--ink-soft);"><svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
+    <a href="https://scholar.google.com/citations?user=39mYS48AAAAJ&amp;hl=en" target="_blank" rel="noopener" aria-label="Google Scholar" title="Google Scholar" style="display:flex; align-items:center; color:var(--ink-soft);"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v3.5L12 20l7-3.32v-3.5L12 17l-7-3.82z"/></svg></a>
+    <span style="width:1px; height:14px; background:var(--border-strong);"></span>
+    <span style="color:var(--muted);">Chicago, IL</span>
+    <span style="color:var(--muted);">U.S. Permanent Resident · No sponsorship required</span>
+  </div>
+
+  <div style="height:1px; background:var(--border); margin:32px 0;"></div>
+
+  <!-- ===== PROFILE ===== -->
+  <section style="margin-bottom:36px;">
+    <div style="display:flex; align-items:center; gap:12px; margin:0 0 16px;"><span style="width:18px; height:3px; background:var(--accent); border-radius:2px;"></span><h2 style="font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin:0;">Profile</h2></div>
+    <p style="font-size:16px; line-height:1.65; color:var(--ink-soft); margin:0; max-width:90ch;">Applied AI/ML engineer focused on LLM evaluation, observability, and agentic systems. Builds production AI applications, multi-agent architectures, MCP servers, and evaluation frameworks for high-stakes, high-accuracy workflows — including anti-hallucination pipelines, LLM-as-judge calibration, and deterministic citation-grounding audits. Recently designed correctness monitoring for an AI tax-preparation agent and built financialreport.ing, an AI equity-research platform with full Langfuse / OpenTelemetry observability. A rare combination of production AI engineering, evaluation rigor, open-source systems, and financial-domain depth.</p>
+  </section>
+
+  <!-- ===== FOCUS FILTERS ===== -->
+  <div class="no-print">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 14px; flex-wrap:wrap;">
+      <span style="font-family:var(--font-mono); font-size:12px; color:var(--muted);">↳ Filter the work below by focus area</span>
+      <button onClick="{{ clearFilter }}" style="font-family:var(--font-mono); font-size:11px; cursor:pointer; background:none; border:1px solid var(--border); color:var(--muted); border-radius:999px; padding:5px 13px;">Clear filter</button>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:10px;">
+      <button type="button" data-filter="evaluation" style="font-family:var(--font-body); font-size:14px; font-weight:600; cursor:pointer; background:var(--surface); color:var(--ink); border:1px solid var(--border-strong); border-radius:999px; padding:10px 18px; user-select:none;">LLM Evals</button>
+      <button type="button" data-filter="agentic" style="font-family:var(--font-body); font-size:14px; font-weight:600; cursor:pointer; background:var(--surface); color:var(--ink); border:1px solid var(--border-strong); border-radius:999px; padding:10px 18px; user-select:none;">Agentic Systems</button>
+      <button type="button" data-filter="rag" style="font-family:var(--font-body); font-size:14px; font-weight:600; cursor:pointer; background:var(--surface); color:var(--ink); border:1px solid var(--border-strong); border-radius:999px; padding:10px 18px; user-select:none;">RAG &amp; Retrieval</button>
+      <button type="button" data-filter="nlp" style="font-family:var(--font-body); font-size:14px; font-weight:600; cursor:pointer; background:var(--surface); color:var(--ink); border:1px solid var(--border-strong); border-radius:999px; padding:10px 18px; user-select:none;">NLP</button>
+      <button type="button" data-filter="mcp" style="font-family:var(--font-body); font-size:14px; font-weight:600; cursor:pointer; background:var(--surface); color:var(--ink); border:1px solid var(--border-strong); border-radius:999px; padding:10px 18px; user-select:none;">MCP Servers</button>
+    </div>
+  </div>
+
+  <!-- ===== TWO COLUMNS ===== -->
+  <div style="display:grid; grid-template-columns:1.7fr 1fr; gap:48px; margin-top:44px;">
+
+    <!-- MAIN COLUMN -->
+    <main>
+      <!-- Selected Work -->
+      <section style="margin-bottom:44px;">
+        <div style="display:flex; align-items:center; gap:12px; margin:0 0 14px;"><span style="width:18px; height:3px; background:var(--accent); border-radius:2px;"></span><h2 style="font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin:0;">Selected Work — AI, Evaluation &amp; Open Source</h2></div>
+        <div style="display:flex; flex-wrap:wrap; gap:16px; margin:0 0 22px; font-family:var(--font-mono); font-size:11px; color:var(--muted);">
+          <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:3px; background:var(--skill-soft); border:1px solid var(--skill-bd);"></span>Skills</span>
+          <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:3px; background:var(--lang-soft); border:1px solid var(--lang-bd);"></span>Languages</span>
+          <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:3px; background:var(--tool-soft); border:1px dashed var(--tool-bd);"></span>Tools</span>
+        </div>
+
+        <div data-item data-tags="evaluation observability agentic sec-xbrl" style="margin-bottom:30px;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+            <h3 style="font-size:18px; font-weight:700; margin:0; letter-spacing:-0.01em;">financialreport.ing <span style="font-weight:500; color:var(--muted);">· Creator &amp; Lead Engineer</span></h3>
+            <span style="font-family:var(--font-mono); font-size:12px; color:var(--muted); flex:none;">2026</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; margin:7px 0 12px;">
+            <span style="font-size:14px; color:var(--ink-soft);">AI-native equity-research platform</span>
+            <span style="display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:var(--ink-soft);"><span style="width:7px; height:7px; border-radius:50%; background:oklch(64% 0.14 150);"></span>Production</span>
+          </div>
+          <ul style="margin:0; padding-left:18px; font-size:15px; line-height:1.6; color:var(--ink-soft);">
+            <li style="margin-bottom:5px;">Architected a multi-agent LLM system — lead orchestrator, parallel specialist sub-agents, research planner, and an LLM-as-judge verifier — with tiered model routing for <strong style="color:var(--ink);">~40% cost savings</strong> and an evaluator-optimizer loop that revises until every figure is verified.</li>
+            <li style="margin-bottom:5px;">Built an anti-hallucination pipeline pairing an LLM verifier with a deterministic, pure-code citation-grounding audit that re-matches every cited number against source SEC/XBRL facts at any unit scale — making each figure traceable to its filing.</li>
+            <li style="margin-bottom:5px;">Engineered a custom LLM evaluation harness with a numeric hallucination guard, enforced by an automated test suite with CI gating on every change.</li>
+            <li>Established LLM observability with Langfuse + OpenTelemetry span trees (per-run, per-tool, per-generation token / cost tracking) on a serverless Cloudflare Workers + React 19 stack.</li>
+          </ul>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:13px;">
+            <span class="sc-tag tag-skill">LLM evaluation</span>
+            <span class="sc-tag tag-skill">LLM-as-judge</span>
+            <span class="sc-tag tag-skill">Hallucination detection</span>
+            <span class="sc-tag tag-skill">Citation grounding</span>
+            <span class="sc-tag tag-skill">Multi-agent</span>
+            <span class="sc-tag tag-skill">Observability</span>
+            <span class="sc-tag tag-lang">TypeScript</span>
+            <span class="sc-tag tag-tool">Cloudflare Workers</span>
+            <span class="sc-tag tag-tool">Langfuse</span>
+            <span class="sc-tag tag-tool">OpenTelemetry</span>
+            <span class="sc-tag tag-tool">Hono</span>
+            <span class="sc-tag tag-tool">React</span>
+            <span class="sc-tag tag-tool">Vitest</span>
+          </div>
+        </div>
+
+        <div data-item data-tags="evaluation observability llm-judge" style="margin-bottom:30px;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+            <h3 style="font-size:18px; font-weight:700; margin:0; letter-spacing:-0.01em;">LLM Correctness Monitoring <span style="font-weight:500; color:var(--muted);">· Accrual Inc.</span></h3>
+            <span style="font-family:var(--font-mono); font-size:12px; color:var(--muted); flex:none;">May – Jun 2026</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; margin:7px 0 12px;">
+            <span style="font-size:14px; color:var(--ink-soft);">Contract Data Scientist / ML Engineer</span>
+            <span style="display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:var(--ink-soft);"><span style="width:7px; height:7px; border-radius:50%; background:var(--accent);"></span>Contract</span>
+          </div>
+          <ul style="margin:0; padding-left:18px; font-size:15px; line-height:1.6; color:var(--ink-soft);">
+            <li style="margin-bottom:5px;">Designed a correctness-monitoring framework for an agentic AI workflow, separating model-owned input quality from downstream system behavior.</li>
+            <li style="margin-bottom:5px;">Defined SLIs, a multi-label error taxonomy, human labeling workflow, and an LLM-as-judge calibration process for high-risk outputs.</li>
+            <li>Built dashboard-ready metric definitions for evaluation coverage, review triage, and judge-vs-human alignment.</li>
+          </ul>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:13px;">
+            <span class="sc-tag tag-skill">LLM-as-judge</span>
+            <span class="sc-tag tag-skill">LLM evaluation</span>
+            <span class="sc-tag tag-skill">SLIs</span>
+            <span class="sc-tag tag-skill">Observability</span>
+            <span class="sc-tag tag-lang">Python</span>
+            <span class="sc-tag tag-lang">TypeScript</span>
+            <span class="sc-tag tag-lang">SQL</span>
+            <span class="sc-tag tag-tool">Temporal</span>
+            <span class="sc-tag tag-tool">Metabase</span>
+          </div>
+        </div>
+
+        <div data-item data-tags="rag mcp agentic vector nlp python" style="margin-bottom:30px;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+            <h3 style="font-size:18px; font-weight:700; margin:0; letter-spacing:-0.01em;">AI Research Assistant (AIRA) <span style="font-weight:500; color:var(--muted);">· Creator &amp; Lead Developer</span></h3>
+            <span style="font-family:var(--font-mono); font-size:12px; color:var(--muted); flex:none;">2023 – Present</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; margin:7px 0 12px;">
+            <span style="font-size:14px; color:var(--ink-soft);">Production AI platform</span>
+            <span style="display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:var(--ink-soft);"><span style="width:7px; height:7px; border-radius:50%; background:oklch(64% 0.14 150);"></span>Production</span>
+          </div>
+          <ul style="margin:0; padding-left:18px; font-size:15px; line-height:1.6; color:var(--ink-soft);">
+            <li style="margin-bottom:5px;">Evolved from RAG-based literature Q&amp;A into an MCP-enabled agentic system for source-grounded search, citation-network analysis, and full-text extraction across Semantic Scholar, arXiv, and Wiley.</li>
+            <li style="margin-bottom:5px;">Scaled to <strong style="color:var(--ink);">100,000+ queries/month</strong> across hosted and local workflows — Smithery.ai, Claude, Cursor, Claude Code, and npm installs.</li>
+            <li>Published system architecture and evaluation results in the <em>Journal of Information Systems</em> (ABDC A).</li>
+          </ul>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:13px;">
+            <span class="sc-tag tag-skill">Agentic Workflows</span>
+            <span class="sc-tag tag-skill">Vector DBs</span>
+            <span class="sc-tag tag-skill">Vector search</span>
+            <span class="sc-tag tag-lang">TypeScript</span>
+            <span class="sc-tag tag-tool">MCP</span>
+            <span class="sc-tag tag-tool">RAG</span>
+            <span class="sc-tag tag-tool">Smithery.ai</span>
+            <span class="sc-tag tag-tool">NPM</span>
+          </div>
+        </div>
+
+        <div data-item data-tags="agentic nlp" style="margin-bottom:30px;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+            <h3 style="font-size:18px; font-weight:700; margin:0; letter-spacing:-0.01em;">VictorAI.bot <span style="font-weight:500; color:var(--muted);">· Founder &amp; Developer</span></h3>
+            <span style="font-family:var(--font-mono); font-size:12px; color:var(--muted); flex:none;">2024 – Present</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; margin:7px 0 12px;">
+            <span style="font-size:14px; color:var(--ink-soft);">AI Teaching Assistant</span>
+            <span style="display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:var(--ink-soft);"><span style="width:7px; height:7px; border-radius:50%; background:oklch(64% 0.14 150);"></span>Production</span>
+          </div>
+          <ul style="margin:0; padding-left:18px; font-size:15px; line-height:1.6; color:var(--ink-soft);">
+            <li style="margin-bottom:5px;">Built an AI teaching assistant integrated with Canvas LMS, automating student support and curriculum-aligned Q&amp;A for university courses.</li>
+            <li>Developed multi-turn conversational AI with context-aware retrieval across course materials, syllabi, and assignment databases.</li>
+          </ul>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:13px;">
+            <span class="sc-tag tag-skill">Agentic Workflows</span>
+            <span class="sc-tag tag-skill">Conversational AI</span>
+            <span class="sc-tag tag-lang">Python</span>
+            <span class="sc-tag tag-lang">TypeScript</span>
+            <span class="sc-tag tag-tool">Next.js</span>
+            <span class="sc-tag tag-tool">Firebase</span>
+            <span class="sc-tag tag-tool">Google Cloud</span>
+            <span class="sc-tag tag-tool">Canvas LMS</span>
+          </div>
+        </div>
+
+        <div data-item data-tags="sec-xbrl python" style="margin-bottom:30px;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+            <h3 style="font-size:18px; font-weight:700; margin:0; letter-spacing:-0.01em;">XBRL-US Python Package <span style="font-weight:500; color:var(--muted);">· Developer</span></h3>
+            <span style="font-family:var(--font-mono); font-size:12px; color:var(--muted); flex:none;">2023 – Present</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; margin:7px 0 12px;">
+            <span style="font-size:14px; color:var(--ink-soft);">Open-source · PyPI</span>
+            <span style="display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:var(--ink-soft);"><span style="width:7px; height:7px; border-radius:50%; background:oklch(62% 0.13 250);"></span>Open Source</span>
+          </div>
+          <ul style="margin:0; padding-left:18px; font-size:15px; line-height:1.6; color:var(--ink-soft);">
+            <li style="margin-bottom:5px;">Created and maintain the official Python API wrapper for XBRL.US with <strong style="color:var(--ink);">30,000+ downloads</strong>, enabling programmatic access to structured financial data.</li>
+            <li>Designed clean API abstractions for complex SEC filing queries, cutting analyst data-extraction time from hours to minutes.</li>
+          </ul>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:13px;">
+            <span class="sc-tag tag-skill">API design</span>
+            <span class="sc-tag tag-skill">Open source</span>
+            <span class="sc-tag tag-lang">Python</span>
+            <span class="sc-tag tag-tool">PyPI</span>
+            <span class="sc-tag tag-tool">SEC EDGAR</span>
+            <span class="sc-tag tag-tool">XBRL</span>
+          </div>
+        </div>
+
+        <div data-item data-tags="sec-xbrl mcp agentic" style="margin-bottom:0;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+            <h3 style="font-size:18px; font-weight:700; margin:0; letter-spacing:-0.01em;">XBRL-US MCP Server <span style="font-weight:500; color:var(--muted);">· Co-Developer</span></h3>
+            <span style="font-family:var(--font-mono); font-size:12px; color:var(--muted); flex:none;">2025 – Present</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; margin:7px 0 12px;">
+            <span style="font-size:14px; color:var(--ink-soft);">Agentic AI system</span>
+            <span style="display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:var(--ink-soft);"><span style="width:7px; height:7px; border-radius:50%; background:oklch(62% 0.13 250);"></span>Open Source</span>
+          </div>
+          <ul style="margin:0; padding-left:18px; font-size:15px; line-height:1.6; color:var(--ink-soft);">
+            <li>Co-built an MCP server for querying as-filed SEC, FERC, and ESEF reports with structured XBRL context — labels, periods, units, dimensions, and provenance; <strong style="color:var(--ink);">ranks on page 1 of Smithery with 26,000+ connections</strong>.</li>
+          </ul>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:13px;">
+            <span class="sc-tag tag-skill">Agentic Workflows</span>
+            <span class="sc-tag tag-skill">Provenance</span>
+            <span class="sc-tag tag-lang">Python</span>
+            <span class="sc-tag tag-tool">MCP</span>
+            <span class="sc-tag tag-tool">SEC/FERC/ESEF</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Experience -->
+      <section style="margin-bottom:44px;">
+        <div style="display:flex; align-items:center; gap:12px; margin:0 0 24px;"><span style="width:18px; height:3px; background:var(--accent); border-radius:2px;"></span><h2 style="font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin:0;">Academic Appointments</h2></div>
+
+        <div data-item data-tags="teaching research evaluation" style="margin-bottom:0;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+            <h3 style="font-size:17px; font-weight:700; margin:0;">Associate / Assistant Professor of Accounting <span style="font-weight:500; color:var(--muted);">· UW–Whitewater</span></h3>
+            <span style="font-family:var(--font-mono); font-size:12px; color:var(--muted); flex:none;">2019 – Present</span>
+          </div>
+          <ul style="margin:10px 0 0; padding-left:18px; font-size:15px; line-height:1.6; color:var(--ink-soft);">
+            <li style="margin-bottom:5px;">Lead AI, ML, and NLP research applied to financial reporting, audit quality, and corporate governance; published 9 peer-reviewed articles (600+ citations).</li>
+            <li style="margin-bottom:5px;">Serve on the Chancellor's AI Advisory Committee as Business School Dean's Liaison; teach Accounting Information Systems (mean eval 4.48/5.00); mentor 10+ doctoral students.</li>
+            <li>Delivered 20+ invited talks and keynotes on generative AI for the Michigan CPA Association, AAA, and XBRL.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Publications -->
+      <section>
+        <div style="display:flex; align-items:center; gap:12px; margin:0 0 24px;"><span style="width:18px; height:3px; background:var(--accent); border-radius:2px;"></span><h2 style="font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin:0;">Selected Publications</h2></div>
+
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div data-item data-tags="research evaluation" style="border-left:2px solid var(--border-strong); padding-left:16px;">
+            <p style="font-size:15px; line-height:1.5; margin:0; font-weight:600;">Is it All Hype? ChatGPT's Performance and Disruptive Potential in Accounting and Auditing</p>
+            <p style="font-size:13px; line-height:1.5; color:var(--muted); margin:4px 0 8px;">Eulerich, Sanatizadeh, Vakilzadeh &amp; Wood · <em>Review of Accounting Studies</em>, 2024</p>
+            <div style="display:flex; flex-wrap:wrap; gap:7px;"><span style="font-family:var(--font-mono); font-size:11px; color:var(--accent-ink); background:var(--accent); border-radius:4px; padding:3px 9px;">Best Paper</span><span style="font-family:var(--font-mono); font-size:11px; background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:3px 9px;">180 citations</span><span style="font-family:var(--font-mono); font-size:11px; background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:3px 9px;">Bloomberg</span></div>
+          </div>
+          <div data-item data-tags="research rag" style="border-left:2px solid var(--border-strong); padding-left:16px;">
+            <p style="font-size:15px; line-height:1.5; margin:0; font-weight:600;">The Development of a RAG-Based Artificial Intelligence Research Assistant (AIRA)</p>
+            <p style="font-size:13px; line-height:1.5; color:var(--muted); margin:4px 0 8px;">Vakilzadeh &amp; Wood · <em>Journal of Information Systems</em>, 2025</p>
+            <div style="display:flex; flex-wrap:wrap; gap:7px;"><span style="font-family:var(--font-mono); font-size:11px; background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:3px 9px;">First production-RAG architecture paper in accounting</span></div>
+          </div>
+          <div data-item data-tags="research" style="border-left:2px solid var(--border-strong); padding-left:16px;">
+            <p style="font-size:15px; line-height:1.5; margin:0; font-weight:600;">Corporate Culture Similarity between Audit Firms and Clients on Reporting Quality</p>
+            <p style="font-size:13px; line-height:1.5; color:var(--muted); margin:4px 0 8px;">Golden, Mammadov &amp; Vakilzadeh · <em>The British Accounting Review</em>, 2026</p>
+            <div style="display:flex; flex-wrap:wrap; gap:7px;"><span style="font-family:var(--font-mono); font-size:11px; color:var(--accent-ink); background:var(--accent); border-radius:4px; padding:3px 9px;">ABDC A*</span></div>
+          </div>
+          <div data-item data-tags="research ml" style="border-left:2px solid var(--border-strong); padding-left:16px;">
+            <p style="font-size:15px; line-height:1.5; margin:0; font-weight:600;">Does Corporate Culture Impact Tax Avoidance: A Machine Learning Approach</p>
+            <p style="font-size:13px; line-height:1.5; color:var(--muted); margin:4px 0 8px;">Golden, Mammadov &amp; Vakilzadeh · <em>International Review of Financial Analysis</em>, 2024</p>
+            <div style="display:flex; flex-wrap:wrap; gap:7px;"><span style="font-family:var(--font-mono); font-size:11px; background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:3px 9px;">Novel ML methodology</span></div>
+          </div>
+          <div data-item data-tags="research agentic" style="border-left:2px solid var(--border-strong); padding-left:16px;">
+            <p style="font-size:15px; line-height:1.5; margin:0; font-weight:600;">The Implications of AI Agents for the Accounting Profession</p>
+            <p style="font-size:13px; line-height:1.5; color:var(--muted); margin:4px 0 8px;">Vakilzadeh &amp; Wood · <em>Working Paper</em></p>
+            <div style="display:flex; flex-wrap:wrap; gap:7px;"><span style="font-family:var(--font-mono); font-size:11px; background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:3px 9px;">Working paper</span></div>
+          </div>
+        </div>
+        <p style="font-family:var(--font-mono); font-size:12px; color:var(--muted); margin:20px 0 0;">9 peer-reviewed articles (2 A*) · 2 under review · 4 working papers · 600+ total citations</p>
+      </section>
+    </main>
+
+    <!-- SIDE COLUMN -->
+    <aside>
+      <!-- Skills -->
+      <section style="margin-bottom:40px;">
+        <div style="display:flex; align-items:center; gap:12px; margin:0 0 20px;"><span style="width:18px; height:3px; background:var(--accent); border-radius:2px;"></span><h2 style="font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin:0;">Skills</h2></div>
+
+        <div style="margin-bottom:18px;">
+          <div style="font-family:var(--font-mono); font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">Skills</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            <span class="sc-tag tag-skill" data-filter="llm evaluation" style="user-select:none;">LLM evaluation</span>
+            <span class="sc-tag tag-skill" data-filter="llm-as-judge" style="user-select:none;">LLM-as-judge</span>
+            <span class="sc-tag tag-skill" data-filter="hallucination detection" style="user-select:none;">Hallucination detection</span>
+            <span class="sc-tag tag-skill" data-filter="citation grounding" style="user-select:none;">Citation grounding</span>
+            <span class="sc-tag tag-skill" data-filter="observability" style="user-select:none;">Observability</span>
+            <span class="sc-tag tag-skill" data-filter="slis" style="user-select:none;">SLIs</span>
+            <span class="sc-tag tag-skill" data-filter="agentic workflows" style="user-select:none;">Agentic Workflows</span>
+            <span class="sc-tag tag-skill" data-filter="multi-agent" style="user-select:none;">Multi-agent</span>
+            <span class="sc-tag tag-skill" data-filter="conversational ai" style="user-select:none;">Conversational AI</span>
+            <span class="sc-tag tag-skill" data-filter="vector dbs" style="user-select:none;">Vector DBs</span>
+            <span class="sc-tag tag-skill" data-filter="vector search" style="user-select:none;">Vector search</span>
+            <span class="sc-tag tag-skill" data-filter="api design" style="user-select:none;">API design</span>
+            <span class="sc-tag tag-skill" data-filter="open source" style="user-select:none;">Open source</span>
+            <span class="sc-tag tag-skill" data-filter="provenance" style="user-select:none;">Provenance</span>
+            <span class="sc-tag tag-skill" data-filter="nlp" style="user-select:none;">NLP</span>
+            <span class="sc-tag tag-skill" data-filter="transformers" style="user-select:none;">Transformers</span>
+            <span class="sc-tag tag-skill" data-filter="embeddings" style="user-select:none;">Embeddings</span>
+          </div>
+        </div>
+        <div style="margin-bottom:18px;">
+          <div style="font-family:var(--font-mono); font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">Languages</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            <span class="sc-tag tag-lang" data-filter="python" style="user-select:none;">Python</span>
+            <span class="sc-tag tag-lang" data-filter="typescript" style="user-select:none;">TypeScript</span>
+            <span class="sc-tag tag-lang" data-filter="sql" style="user-select:none;">SQL</span>
+            <span class="sc-tag tag-lang" data-filter="javascript" style="user-select:none;">JavaScript</span>
+            <span class="sc-tag tag-lang" data-filter="html/css" style="user-select:none;">HTML/CSS</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-mono); font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">Tools &amp; Frameworks</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            <span class="sc-tag tag-tool" data-filter="mcp" style="user-select:none;">MCP</span>
+            <span class="sc-tag tag-tool" data-filter="rag" style="user-select:none;">RAG</span>
+            <span class="sc-tag tag-tool" data-filter="cloudflare workers" style="user-select:none;">Cloudflare Workers</span>
+            <span class="sc-tag tag-tool" data-filter="langfuse" style="user-select:none;">Langfuse</span>
+            <span class="sc-tag tag-tool" data-filter="opentelemetry" style="user-select:none;">OpenTelemetry</span>
+            <span class="sc-tag tag-tool" data-filter="hono" style="user-select:none;">Hono</span>
+            <span class="sc-tag tag-tool" data-filter="vitest" style="user-select:none;">Vitest</span>
+            <span class="sc-tag tag-tool" data-filter="smithery.ai" style="user-select:none;">Smithery.ai</span>
+            <span class="sc-tag tag-tool" data-filter="npm" style="user-select:none;">NPM</span>
+            <span class="sc-tag tag-tool" data-filter="temporal" style="user-select:none;">Temporal</span>
+            <span class="sc-tag tag-tool" data-filter="metabase" style="user-select:none;">Metabase</span>
+            <span class="sc-tag tag-tool" data-filter="next.js" style="user-select:none;">Next.js</span>
+            <span class="sc-tag tag-tool" data-filter="firebase" style="user-select:none;">Firebase</span>
+            <span class="sc-tag tag-tool" data-filter="google cloud" style="user-select:none;">Google Cloud</span>
+            <span class="sc-tag tag-tool" data-filter="canvas lms" style="user-select:none;">Canvas LMS</span>
+            <span class="sc-tag tag-tool" data-filter="pypi" style="user-select:none;">PyPI</span>
+            <span class="sc-tag tag-tool" data-filter="sec edgar" style="user-select:none;">SEC EDGAR</span>
+            <span class="sc-tag tag-tool" data-filter="xbrl" style="user-select:none;">XBRL</span>
+            <span class="sc-tag tag-tool" data-filter="sec/ferc/esef" style="user-select:none;">SEC/FERC/ESEF</span>
+            <span class="sc-tag tag-tool" data-filter="svelte" style="user-select:none;">Svelte</span>
+            <span class="sc-tag tag-tool" data-filter="react" style="user-select:none;">React</span>
+            <span class="sc-tag tag-tool" data-filter="selenium" style="user-select:none;">Selenium</span>
+            <span class="sc-tag tag-tool" data-filter="tableau" style="user-select:none;">Tableau</span>
+            <span class="sc-tag tag-tool" data-filter="power bi" style="user-select:none;">Power BI</span>
+            <span class="sc-tag tag-tool" data-filter="sas" style="user-select:none;">SAS</span>
+            <span class="sc-tag tag-tool" data-filter="stata" style="user-select:none;">STATA</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Education -->
+      <section style="margin-bottom:40px;">
+        <div style="display:flex; align-items:center; gap:12px; margin:0 0 20px;"><span style="width:18px; height:3px; background:var(--accent); border-radius:2px;"></span><h2 style="font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin:0;">Education</h2></div>
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div>
+            <div style="font-size:15px; font-weight:700;">Ph.D., Business Administration</div>
+            <div style="font-size:14px; color:var(--ink-soft);">Accounting · Florida Atlantic University</div>
+            <div style="font-family:var(--font-mono); font-size:12px; color:var(--muted); margin-top:3px;">2019 · GPA 3.82</div>
+          </div>
+          <div>
+            <div style="font-size:15px; font-weight:700;">Master of Accountancy</div>
+            <div style="font-size:14px; color:var(--ink-soft);">North Dakota State University</div>
+            <div style="font-family:var(--font-mono); font-size:12px; color:var(--muted); margin-top:3px;">2013 · GPA 3.67</div>
+          </div>
+          <div>
+            <div style="font-size:15px; font-weight:700;">B.A., Accounting</div>
+            <div style="font-size:14px; color:var(--ink-soft);">School of Economic Sciences, Tehran</div>
+            <div style="font-family:var(--font-mono); font-size:12px; color:var(--muted); margin-top:3px;">2009</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recognition -->
+      <section>
+        <div style="display:flex; align-items:center; gap:12px; margin:0 0 20px;"><span style="width:18px; height:3px; background:var(--accent); border-radius:2px;"></span><h2 style="font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin:0;">Recognition</h2></div>
+        <ul style="margin:0; padding-left:18px; font-size:14px; line-height:1.55; color:var(--ink-soft); display:flex; flex-direction:column; gap:8px;">
+          <li>Best Paper Award — Review of Accounting Studies Conference (2023)</li>
+          <li>UWW College of Business Research Award (2025)</li>
+          <li>AAA/Deloitte/J. Michael Cook Doctoral Consortium Fellow (2018)</li>
+          <li>Featured in Bloomberg, Investopedia, MSN News, Accounting Today, CFO Dive, NYSSCPA, CLS Blue Sky Blog</li>
+          <li>20+ invited keynotes — MICPA, AAA, XBRL, Clemson, Duisburg-Essen</li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Signal Yellow&quot;,&quot;Cobalt&quot;,&quot;Forest&quot;,&quot;Crimson&quot;],&quot;default&quot;:&quot;Signal Yellow&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;defaultTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  rootRef = React.createRef();
+  state = { theme: this.props.defaultTheme || 'light', filter: null };
+
+  componentDidMount() {
+    this.applyAccent();
+    this.applyFilter();
+    const el = this.rootRef.current;
+    this._onClick = (e) => {
+      const c = e.target.closest('[data-filter]');
+      if (!c || !el.contains(c)) return;
+      if (c.classList.contains('sc-unattached')) return;
+      const f = c.getAttribute('data-filter');
+      this.setState(s => ({ filter: s.filter === f ? null : f }), () => this.applyFilter());
+    };
+    el.addEventListener('click', this._onClick);
+    this.markAttachment();
+    el.querySelectorAll('[data-item], main section').forEach(n => { n._mb0 = n.style.marginBottom || '0px'; });
+    this._ready = true;
+  }
+
+  norm(s) { return (s || '').trim().toLowerCase(); }
+
+  itemTokens(it) {
+    const set = new Set((it.getAttribute('data-tags') || '').split(/\s+/).filter(Boolean).map(t => this.norm(t)));
+    it.querySelectorAll('.sc-tag').forEach(c => set.add(this.norm(c.textContent)));
+    return set;
+  }
+
+  markAttachment() {
+    const el = this.rootRef.current;
+    if (!el) return;
+    const used = new Set();
+    el.querySelectorAll('main [data-item]').forEach(it => this.itemTokens(it).forEach(t => used.add(t)));
+    el.querySelectorAll('aside .sc-tag').forEach(s => {
+      s.classList.toggle('sc-unattached', !used.has(this.norm(s.textContent)));
+    });
+  }
+  componentWillUnmount() {
+    const el = this.rootRef.current;
+    if (el && this._onClick) el.removeEventListener('click', this._onClick);
+  }
+  componentDidUpdate() { this.applyAccent(); this.applyFilter(); }
+
+  applyAccent() {
+    const el = this.rootRef.current;
+    if (!el) return;
+    const theme = this.state.theme;
+    const ACCENTS = {
+      'Signal Yellow': { light: ['oklch(77% 0.165 76)', 'oklch(93% 0.06 82)', 'oklch(24% 0.04 75)'], dark: ['oklch(82% 0.16 80)', 'oklch(34% 0.07 70)', 'oklch(15% 0 0)'] },
+      Cobalt:  { light: ['oklch(52% 0.16 256)', 'oklch(94% 0.03 256)', 'oklch(100% 0 0)'], dark: ['oklch(70% 0.13 256)', 'oklch(30% 0.06 256)', 'oklch(15% 0 0)'] },
+      Forest:  { light: ['oklch(50% 0.12 150)', 'oklch(94% 0.03 150)', 'oklch(100% 0 0)'], dark: ['oklch(70% 0.12 152)', 'oklch(30% 0.05 152)', 'oklch(15% 0 0)'] },
+      Crimson: { light: ['oklch(54% 0.18 22)', 'oklch(94% 0.04 22)', 'oklch(100% 0 0)'], dark: ['oklch(70% 0.16 24)', 'oklch(30% 0.07 22)', 'oklch(15% 0 0)'] },
+    };
+    const a = (ACCENTS[this.props.accent] || ACCENTS['Signal Yellow'])[theme];
+    el.style.setProperty('--accent', a[0]);
+    el.style.setProperty('--accent-soft', a[1]);
+    el.style.setProperty('--accent-ink', a[2]);
+  }
+
+  applyFilter() {
+    const el = this.rootRef.current;
+    if (!el) return;
+    const f = this.state.filter;
+    const animate = this._ready;
+
+    el.querySelectorAll('[data-filter]').forEach(c => {
+      c.classList.toggle('sc-active', !!f && c.getAttribute('data-filter') === f);
+    });
+
+    const allItems = [...el.querySelectorAll('[data-item]')];
+    const has = (it) => this.itemTokens(it).has(f);
+    const active = !!f && allItems.some(has);
+
+    el.querySelectorAll('main section').forEach(sec => {
+      const secItems = [...sec.querySelectorAll('[data-item]')];
+      if (!secItems.length) return;
+      const secHide = active && !secItems.some(has);
+      const secWasHidden = sec.classList.contains('sc-hide');
+
+      secItems.forEach(it => {
+        const hide = active && !has(it);
+        const was = it.classList.contains('sc-hide');
+        if (animate && !secHide && !secWasHidden && hide !== was) {
+          this.slide(it, hide ? 'hide' : 'show');
+        } else {
+          this.cancelAnim(it);
+          it.classList.toggle('sc-hide', hide);
+        }
+      });
+
+      if (secHide !== secWasHidden) {
+        if (animate) { this.slide(sec, secHide ? 'hide' : 'show'); }
+        else { this.cancelAnim(sec); sec.classList.toggle('sc-hide', secHide); }
+      }
+    });
+
+    // Highlight (dark tone) every sidebar tag used by a currently-matching experience.
+    const relevant = new Set();
+    if (active) allItems.filter(has).forEach(it => this.itemTokens(it).forEach(t => relevant.add(t)));
+    el.querySelectorAll('aside .sc-tag').forEach(s => {
+      const on = active && !s.classList.contains('sc-unattached') && relevant.has(this.norm(s.textContent));
+      s.classList.toggle('sc-hi', on);
+    });
+  }
+
+  slide(el, dir) {
+    if (el._scTarget === dir) return;
+    this.cancelAnim(el);
+    el._scTarget = dir;
+    if (dir === 'show') el.classList.remove('sc-hide');
+    const full = el.scrollHeight;
+    const mb = el._mb0 || '0px';
+    const mbN = parseFloat(mb) || 0;
+    el.style.overflow = 'hidden';
+    const dur = 280, t0 = performance.now();
+    const ease = p => 1 - Math.pow(1 - p, 3);
+    const commit = () => {
+      if (el._scTarget !== dir) return;
+      el._scTarget = null;
+      if (el._scRAF) { cancelAnimationFrame(el._scRAF); el._scRAF = null; }
+      if (el._scTimer) { clearTimeout(el._scTimer); el._scTimer = null; }
+      el.style.height = ''; el.style.overflow = ''; el.style.opacity = '';
+      el.style.marginBottom = mb;
+      if (dir === 'hide') el.classList.add('sc-hide');
+    };
+    const step = (now) => {
+      if (el._scTarget !== dir) return;
+      const p = Math.min(1, (now - t0) / dur);
+      const e = ease(p);
+      const k = dir === 'show' ? e : 1 - e;
+      el.style.height = (full * k) + 'px';
+      el.style.marginBottom = (mbN * k) + 'px';
+      el.style.opacity = String(k);
+      if (p < 1) el._scRAF = requestAnimationFrame(step);
+      else commit();
+    };
+    el._scRAF = requestAnimationFrame(step);
+    el._scTimer = setTimeout(commit, dur + 80);
+  }
+
+  cancelAnim(el) {
+    if (el._scRAF) { cancelAnimationFrame(el._scRAF); el._scRAF = null; }
+    if (el._scTimer) { clearTimeout(el._scTimer); el._scTimer = null; }
+    el._scTarget = null;
+    el.style.height = ''; el.style.overflow = ''; el.style.opacity = '';
+    if (el._mb0 !== undefined) el.style.marginBottom = el._mb0;
+  }
+
+  renderVals() {
+    const theme = this.state.theme;
+    return {
+      rootRef: this.rootRef,
+      theme,
+      themeLabel: theme === 'dark' ? 'Dark' : 'Light',
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === 'dark' ? 'light' : 'dark' })),
+      printResume: () => { this.setState({ filter: null }, () => { this.applyFilter(); window.print(); }); },
+      clearFilter: () => this.setState({ filter: null }, () => this.applyFilter()),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+# Design-canvas source exports (not part of the published site)
+offline/
+
+# macOS
+.DS_Store
+
+# Editor / tooling
+node_modules/
+*.log
